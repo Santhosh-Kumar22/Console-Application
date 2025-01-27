@@ -1,7 +1,8 @@
 package com.theatre;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public interface AdminOperations {
-	void addSeat(String seatNumber) throws SQLException;
+	void addSeat(String seatNumber);
 }

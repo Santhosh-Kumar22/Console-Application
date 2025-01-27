@@ -1,5 +1,6 @@
 package com.theatre;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -18,21 +19,13 @@ public class Admin {
 		
 		String seatNumber = scanner.nextLine();
 		
-		try {
-			seatBooking.addSeat(seatNumber);
-		}catch(SQLException sqlException) {
-			sqlException.printStackTrace();
-		}
+		seatBooking.addSeat(seatNumber);
 	}
 	
 	
 	// admin to view available seats
 	public void viewAvailableSeats() {
-		try {
-			seatBooking.showAvailableSeats();
-		}catch (SQLException sqlException) {
-			sqlException.printStackTrace();
-		}
+		seatBooking.showAvailableSeats();
 	}
 	
 	

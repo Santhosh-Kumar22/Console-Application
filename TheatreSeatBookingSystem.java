@@ -1,5 +1,6 @@
 package com.theatre;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,13 +26,13 @@ public class TheatreSeatBookingSystem {
 	
 	static Scanner scanner = new Scanner(System.in);
 
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) {
 		displayMenu();
 	}
 	
 	
 	// Menu Options
-	public static void displayMenu() throws SQLException {
+	public static void displayMenu() {
 		System.out.println("Welcome to Theatre Seat Booking System");
 		
 		System.out.println("1. User");
@@ -65,30 +66,37 @@ public class TheatreSeatBookingSystem {
 					String pass = scanner.next();
 					
 //					Check for user credentials
-					if(validateUserCredentials(userName, pass)) {
-						System.out.println("Welcome back " + userName + " !");
-						while(true) {
-							System.out.println("\n User Menu: ");
-							System.out.println("1. View Available Seats");
-							System.out.println("2. Book Seats");
-							System.out.println("3. Cancel Seats");
-							System.out.println("4. Exit");
-							System.out.println("Choose Option: ");
-							
-							int userChoice1 = scanner.nextInt();
-							
-							if(userChoice1 == 1) {
-								user.displayAvailableSeats();
-							}else if(userChoice1 == 2) {
-								user.bookSeat();
-							}else if(userChoice1 == 3){
-								user.cancelSeat();
-							}else {
-								break;
+					try {
+						if(validateUserCredentials(userName, pass)) {
+							System.out.println("Welcome back " + userName + " !");
+							while(true) {
+								System.out.println("\n User Menu: ");
+								System.out.println("1. View Available Seats");
+								System.out.println("2. Book Seats");
+								System.out.println("3. Cancel Seats");
+								System.out.println("4. Exit");
+								System.out.println("Choose Option: ");
+								
+								int userChoice1 = scanner.nextInt();
+								
+								User user1 = new User();
+								if(userChoice1 == 1) {
+									user1.displayAvailableSeats();
+								}else if(userChoice1 == 2) {
+									user1.bookSeat();
+								}else if(userChoice1 == 3){
+									user1.cancelSeat();
+								}else {
+									break;
+								}
 							}
+						}else {
+							System.out.println("There is no such user. Please register.");
 						}
-					}else {
-						System.out.println("There is no such user. Please register.");
+					} catch (SQLException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 					
 					
@@ -106,10 +114,16 @@ public class TheatreSeatBookingSystem {
 						// logic
 						if(registerPassword.equals(confirmPassword)) {
 							
-							if(registerUser(registerUser, registerPassword)) {
-								System.out.println("You have been registered successfully " + registerUser);
-							}else {
-								System.out.println("user registration failed");
+							try {
+								if(registerUser(registerUser, registerPassword)) {
+									System.out.println("You have been registered successfully " + registerUser);
+								}else {
+									System.out.println("user registration failed");
+								}
+							} catch (SQLException e) {
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
 							}
 						
 						}else {
@@ -182,10 +196,10 @@ public class TheatreSeatBookingSystem {
 	
 	
 	// admin password validation
-	public static boolean validateAdminPassword(String password) {
+	public static boolean validateAdminPassword(String password){
 		String query = "SELECT * FROM admindb WHERE password = ?";
 		
-		try (Connection connection = DbConnection.getConnection();  // Ensure you have this method implemented
+		try (Connection connection = DbConnection.getConnection();  
 	             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 	            preparedStatement.setString(1, password);
 	            try (ResultSet rows = preparedStatement.executeQuery()) {
@@ -200,7 +214,7 @@ public class TheatreSeatBookingSystem {
 	
 	
 	// user credentials validation
-	public static boolean validateUserCredentials(String userName, String password) throws SQLException {
+	public static boolean validateUserCredentials(String userName, String password) throws SQLException, IOException {
 		String query = "select * from users where userName = ? and password = ?";
 		try (
 			Connection connection = DbConnection.getConnection();
@@ -220,7 +234,7 @@ public class TheatreSeatBookingSystem {
 	
 	
 	//code for user registration
-	public static boolean registerUser(String userName, String password) throws SQLException {
+	public static boolean registerUser(String userName, String password) throws SQLException, IOException {
 		String query = "insert into users (userName, password) values(?,?)";
 		
 		try(
